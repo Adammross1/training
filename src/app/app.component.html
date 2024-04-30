@@ -1,11 +1,15 @@
 @if ({recipe: recipe$ | async, recipeNames: recipeNames$ | async}; as data) {
-<p>Recipe Details: {{ data.recipe?.strMeal }}</p>
-
+<p>Recipe Details:</p>
+@for (recipe of data.recipe; track recipe) {
 <ul>
-  @for (ingredient of data.recipe?.ingredients; track ingredient) {
-  <li>{{ ingredient }}</li>
-  }
+  <li>{{ recipe.strMeal }}</li>
+  <ul>
+    @for (ingredient of recipe.ingredients; track ingredient) {
+    <li>{{ ingredient }}</li>
+    }
+  </ul>
 </ul>
+}
 
 <p>Search Recipes</p>
 <ul>

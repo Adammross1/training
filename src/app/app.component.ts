@@ -17,17 +17,12 @@ export class AppComponent {
 
   protected recipe$ = this.recipesService.fetchDetails().pipe(
     map(data => {
-      if (data && data.meals && data.meals.length > 0) {
-        const meal = data.meals[0];
-        return {
-          strMeal: meal.strMeal,
-          ingredients: this.getIngredients(meal)
-        };
-      } else {
-        return null;
-      }
+      const recipes = data.map(response => response.meals[0]);
+      return recipes.map(recipe => ({
+        strMeal: recipe.strMeal,
+        ingredients: this.getIngredients(recipe)
+      }));
     }),
-    // shareReplay(1)
   );
 
   getIngredients(recipe: any): string[] {
@@ -46,11 +41,8 @@ export class AppComponent {
 
   protected recipeNames$ = this.recipesService.fetchName().pipe(
     map(data => {
-      if (data && data.meals) {
-        return data.meals.map((meal: { strMeal: any; }) => meal.strMeal);
-      } else {
-        return [];
-      }
+      const meals = data.map(response => response.meals);
+      return meals.reduce((acc, val) => acc.concat(val), []).map((meal: { strMeal: any; }) => meal.strMeal);
     })
   );
 }
