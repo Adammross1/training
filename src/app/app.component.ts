@@ -16,8 +16,19 @@ export class AppComponent {
   
   private recipesService = inject(RecipesService);
 
+  getRecipe = (recipeValue: string) => {
+    this.recipe$ = this.recipesService.fetchDetails(recipeValue).pipe(
+      map(data => {
+        const recipes = data.map(response => response.meals[0]);
+        return recipes.map(recipe => ({
+          strMeal: recipe.strMeal,
+          ingredients: this.getIngredients(recipe)
+        }));
+      }),
+    );
+  }
 
-  getIngredients(recipe: any): string[] {
+  getIngredients = (recipe: any): string[] => {
     const ingredients: string[] = [];
     for (let i = 1; i <= 20; i++) {
       const ingredient = recipe[`strIngredient${i}`];
@@ -37,17 +48,4 @@ export class AppComponent {
       return meals.reduce((acc, val) => acc.concat(val), []).map((meal: { strMeal: any; }) => meal.strMeal);
     })
   );
-
-
-  getRecipe = (recipeValue: string) => {
-    this.recipe$ = this.recipesService.fetchDetails(recipeValue).pipe(
-      map(data => {
-        const recipes = data.map(response => response.meals[0]);
-        return recipes.map(recipe => ({
-          strMeal: recipe.strMeal,
-          ingredients: this.getIngredients(recipe)
-        }));
-      }),
-    );
-  }
 }
