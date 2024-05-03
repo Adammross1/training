@@ -2,7 +2,7 @@ import { Component, inject } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { RecipesService } from './core/services/recipes.service';
 import { CommonModule } from '@angular/common';
-import { map, shareReplay } from 'rxjs';
+import { Observable, map, of, shareReplay } from 'rxjs';
 @Component({
   selector: 'app-root',
   standalone: true,
@@ -12,18 +12,10 @@ import { map, shareReplay } from 'rxjs';
 })
 export class AppComponent {
   title = 'training';
+  protected recipe$: Observable<{strMeal: string, ingredients: string[]}[]> = of([]);
   
   private recipesService = inject(RecipesService);
 
-  protected recipe$ = this.recipesService.fetchDetails().pipe(
-    map(data => {
-      const recipes = data.map(response => response.meals[0]);
-      return recipes.map(recipe => ({
-        strMeal: recipe.strMeal,
-        ingredients: this.getIngredients(recipe)
-      }));
-    }),
-  );
 
   getIngredients(recipe: any): string[] {
     const ingredients: string[] = [];
@@ -45,4 +37,17 @@ export class AppComponent {
       return meals.reduce((acc, val) => acc.concat(val), []).map((meal: { strMeal: any; }) => meal.strMeal);
     })
   );
+
+
+  getRecipe = (recipeValue: string) => {
+    this.recipe$ = this.recipesService.fetchDetails(recipeValue).pipe(
+      map(data => {
+        const recipes = data.map(response => response.meals[0]);
+        return recipes.map(recipe => ({
+          strMeal: recipe.strMeal,
+          ingredients: this.getIngredients(recipe)
+        }));
+      }),
+    );
+  }
 }

@@ -1,3 +1,9 @@
+<form (submit)="getRecipe(recipeIdInput.value)">
+  <label>Recipe ID</label>
+  <input #recipeIdInput />
+  <button type="submit">Submit</button>
+</form>
+
 @if ({recipe: recipe$ | async, recipeNames: recipeNames$ | async}; as data) {
 <p>Recipe Details:</p>
 @for (recipe of data.recipe; track recipe) {

@@ -8,17 +8,17 @@ import { Observable, forkJoin } from 'rxjs';
 export class RecipesService {
   private http = inject(HttpClient);
 
-  public fetchDetails(): Observable<any[]> {
+  public fetchDetails(recipeId: string): Observable<any[]> {
     // Make the HTTP request and return the Observable
     return forkJoin([
       this.http.get<any>(
-        `https://www.themealdb.com/api/json/v1/1/lookup.php?i=52771`
+        `https://www.themealdb.com/api/json/v1/1/lookup.php?i=${recipeId}`
       ),
       this.http.get<any>(
-        `https://www.themealdb.com/api/json/v1/1/lookup.php?i=52772`
+        `https://www.themealdb.com/api/json/v1/1/lookup.php?i=${recipeId}`
       ),
       this.http.get<any>(
-        `https://www.themealdb.com/api/json/v1/1/lookup.php?i=52773`
+        `https://www.themealdb.com/api/json/v1/1/lookup.php?i=${recipeId}`
       ),
     ]);
   }
