@@ -1,6 +1,10 @@
-<form (submit)="getRecipe(recipeIdInput.value)">
-  <label>Recipe ID</label>
-  <input #recipeIdInput />
+<form (submit)="$event.preventDefault(); getRecipe([recipeIdInput1.value, recipeIdInput2.value, recipeIdInput3.value])">
+  <label>Recipe ID 1</label>
+  <input #recipeIdInput1 />
+  <label>Recipe ID 2</label>
+  <input #recipeIdInput2 />
+  <label>Recipe ID 3</label>
+  <input #recipeIdInput3 />
   <button type="submit">Submit</button>
 </form>
 

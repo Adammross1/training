@@ -8,25 +8,26 @@ import { Observable, map, of, shareReplay } from 'rxjs';
   standalone: true,
   imports: [RouterOutlet, CommonModule],
   templateUrl: './app.component.html',
-  styleUrl: './app.component.scss'
+  styleUrl: './app.component.scss',
 })
 export class AppComponent {
   title = 'training';
-  protected recipe$: Observable<{strMeal: string, ingredients: string[]}[]> = of([]);
-  
+  protected recipe$: Observable<{ strMeal: string; ingredients: string[] }[]> =
+    of([]);
+
   private recipesService = inject(RecipesService);
 
-  getRecipe = (recipeValue: string) => {
-    this.recipe$ = this.recipesService.fetchDetails(recipeValue).pipe(
-      map(data => {
-        const recipes = data.map(response => response.meals[0]);
-        return recipes.map(recipe => ({
+  getRecipe = (recipeValues: string[]) => {
+    this.recipe$ = this.recipesService.fetchDetails(recipeValues).pipe(
+      map((data) => {
+        const recipes = data.map((response) => response.meals[0]);
+        return recipes.map((recipe) => ({
           strMeal: recipe.strMeal,
-          ingredients: this.getIngredients(recipe)
+          ingredients: this.getIngredients(recipe),
         }));
-      }),
+      })
     );
-  }
+  };
 
   getIngredients = (recipe: any): string[] => {
     const ingredients: string[] = [];
@@ -40,12 +41,14 @@ export class AppComponent {
       }
     }
     return ingredients;
-  }
+  };
 
   protected recipeNames$ = this.recipesService.fetchName().pipe(
-    map(data => {
-      const meals = data.map(response => response.meals);
-      return meals.reduce((acc, val) => acc.concat(val), []).map((meal: { strMeal: any; }) => meal.strMeal);
+    map((data) => {
+      const meals = data.map((response) => response.meals);
+      return meals
+        .reduce((acc, val) => acc.concat(val), [])
+        .map((meal: { strMeal: any }) => meal.strMeal);
     })
   );
 }
