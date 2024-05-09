@@ -1,6 +1,7 @@
 import { HttpClient } from '@angular/common/http';
-import { Injectable, inject } from '@angular/core';
+import { Injectable, Signal, inject, signal } from '@angular/core';
 import { Observable, forkJoin, of, tap } from 'rxjs';
+import { toSignal } from '@angular/core/rxjs-interop';
 
 @Injectable({
   providedIn: 'root',
@@ -8,16 +9,15 @@ import { Observable, forkJoin, of, tap } from 'rxjs';
 export class RecipesService {
   private http = inject(HttpClient);
 
-  public fetchDetails(recipeIds: string[]): Observable<any[]> {
-    // Make the HTTP request and return the Observable
-
+  public fetchDetails(recipeIds: string[]): Signal<any[] | undefined> {
     let apiRequests = recipeIds.map((recipe) => {
       return this.http.get<any>(
         `https://www.themealdb.com/api/json/v1/1/lookup.php?i=${recipe}`
       );
     });
 
-    return forkJoin(apiRequests);
+    let responseSignal = toSignal(forkJoin(apiRequests));
+    return responseSignal;
   }
 
   public fetchName(): Observable<any[]> {

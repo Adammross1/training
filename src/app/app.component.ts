@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, Signal, inject } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { RecipesService } from './core/services/recipes.service';
 import { CommonModule } from '@angular/common';
@@ -12,13 +12,13 @@ import { Observable, map, of, shareReplay } from 'rxjs';
 })
 export class AppComponent {
   title = 'training';
-  protected recipe$: Observable<{ strMeal: string; ingredients: string[] }[]> =
+  protected recipeSignal: Signal<{ strMeal: string; ingredients: string[] }[]> =
     of([]);
 
   private recipesService = inject(RecipesService);
 
   getRecipe = (recipeValues: string[]) => {
-    this.recipe$ = this.recipesService.fetchDetails(recipeValues).pipe(
+    this.recipeSignal = this.recipesService.fetchDetails(recipeValues).pipe(
       map((data) => {
         const recipes = data.map((response) => response.meals[0]);
         return recipes.map((recipe) => ({
