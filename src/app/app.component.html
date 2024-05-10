@@ -1,21 +1,16 @@
-<form (submit)="$event.preventDefault(); getRecipe([recipeIdInput1.value, recipeIdInput2.value, recipeIdInput3.value])">
-  <label>Recipe ID 1</label>
-  <input #recipeIdInput1 />
-  <label>Recipe ID 2</label>
-  <input #recipeIdInput2 />
-  <label>Recipe ID 3</label>
-  <input #recipeIdInput3 />
-  <button type="submit">Submit</button>
-</form>
-
-@if ({recipe: recipe$ | async, recipeNames: recipeNames$ | async}; as data) {
+@if ({recipes: filteredRecipeData(), recipeNames: recipeNames$ | async}; as data) {
 <p>Recipe Details:</p>
-@for (recipe of data.recipe; track recipe) {
+@for (recipe of data.recipes; track recipe) {
 <ul>
   <li>{{ recipe.strMeal }}</li>
   <ul>
     @for (ingredient of recipe.ingredients; track ingredient) {
     <li>{{ ingredient }}</li>
+    }
+  </ul>
+  <ul>
+    @for (measure of recipe.measurements; track measure) {
+    <li>{{ measure }}</li>
     }
   </ul>
 </ul>

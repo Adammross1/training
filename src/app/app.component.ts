@@ -1,8 +1,9 @@
-import { Component, Signal, inject } from '@angular/core';
+import { Component, Signal, computed, inject, signal } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { RecipesService } from './core/services/recipes.service';
 import { CommonModule } from '@angular/common';
-import { Observable, map, of, shareReplay } from 'rxjs';
+import { map, of } from 'rxjs';
+import { toSignal } from '@angular/core/rxjs-interop';
 @Component({
   selector: 'app-root',
   standalone: true,
@@ -12,35 +13,34 @@ import { Observable, map, of, shareReplay } from 'rxjs';
 })
 export class AppComponent {
   title = 'training';
-  protected recipeSignal: Signal<{ strMeal: string; ingredients: string[] }[]> =
-    of([]);
-
   private recipesService = inject(RecipesService);
+  private recipesSignal = toSignal(this.recipesService.fetchDetails(['52772', '52773', '52774']));
+  protected filteredRecipeData = computed(() => this.recipesSignal()?.map((value) => value.meals[0]).map((recipe) => ({
+    strMeal: recipe.strMeal,
+    ingredients: this.getIngredients(recipe),
+    measurements: this.getMeasurements(recipe),
+  })));
 
-  getRecipe = (recipeValues: string[]) => {
-    this.recipeSignal = this.recipesService.fetchDetails(recipeValues).pipe(
-      map((data) => {
-        const recipes = data.map((response) => response.meals[0]);
-        return recipes.map((recipe) => ({
-          strMeal: recipe.strMeal,
-          ingredients: this.getIngredients(recipe),
-        }));
-      })
-    );
-  };
 
   getIngredients = (recipe: any): string[] => {
     const ingredients: string[] = [];
     for (let i = 1; i <= 20; i++) {
       const ingredient = recipe[`strIngredient${i}`];
-      const measure = recipe[`strMeasure${i}`];
-      if (ingredient && measure) {
-        ingredients.push(`${ingredient} - ${measure}`);
-      } else if (ingredient) {
+      if (ingredient) {
         ingredients.push(ingredient);
       }
     }
     return ingredients;
+  };
+  getMeasurements = (recipe: any): string[] => {
+    const measurements: string[] = [];
+    for (let i = 1; i <= 20; i++) {
+      const measure = recipe[`strMeasure${i}`];
+      if (measure) {
+        measurements.push(measure);
+      }
+    }
+    return measurements;
   };
 
   protected recipeNames$ = this.recipesService.fetchName().pipe(
