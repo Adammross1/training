@@ -2,25 +2,39 @@ import { Component, Signal, computed, inject, signal } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { RecipesService } from './core/services/recipes.service';
 import { CommonModule } from '@angular/common';
-import { map, of } from 'rxjs';
+import { Observable, Subject, map, of } from 'rxjs';
 import { toSignal } from '@angular/core/rxjs-interop';
+import { FocusDetailsDirective } from './focus-details.directive';
+import { HighlightMeDirective } from './highlight-me.directive';
+import { FormsModule } from '@angular/forms';
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, CommonModule],
+  imports: [
+    RouterOutlet,
+    CommonModule,
+    HighlightMeDirective,
+    FocusDetailsDirective,
+    FormsModule,
+  ],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss',
 })
 export class AppComponent {
   title = 'training';
   private recipesService = inject(RecipesService);
-  private recipesSignal = toSignal(this.recipesService.fetchDetails(['52772', '52773', '52774']));
-  protected filteredRecipeData = computed(() => this.recipesSignal()?.map((value) => value.meals[0]).map((recipe) => ({
-    strMeal: recipe.strMeal,
-    ingredients: this.getIngredients(recipe),
-    measurements: this.getMeasurements(recipe),
-  })));
-
+  private recipesSignal = toSignal(
+    this.recipesService.fetchDetails(['52772', '52773', '52774'])
+  );
+  protected filteredRecipeData = computed(() =>
+    this.recipesSignal()
+      ?.map((value) => value.meals[0])
+      .map((recipe) => ({
+        strMeal: recipe.strMeal,
+        ingredients: this.getIngredients(recipe),
+        measurements: this.getMeasurements(recipe),
+      }))
+  );
 
   getIngredients = (recipe: any): string[] => {
     const ingredients: string[] = [];
@@ -43,12 +57,29 @@ export class AppComponent {
     return measurements;
   };
 
-  protected recipeNames$ = this.recipesService.fetchName().pipe(
-    map((data) => {
-      const meals = data.map((response) => response.meals);
-      return meals
-        .reduce((acc, val) => acc.concat(val), [])
-        .map((meal: { strMeal: any }) => meal.strMeal);
-    })
-  );
+  protected recipeNamesSignal = signal<string[]>([]);
+  protected recipeSearchParam = '';
+  protected searchRecipe = (searchParam: string) => {
+    this.recipesService
+      .fetchName(searchParam)
+      .pipe(
+        map((data) => {
+          const meals = data.meals;
+          if (!meals) {
+            return ['sorry, no results'];
+          }
+          return meals.map((meal: { strMeal: any }) => meal.strMeal);
+        })
+      )
+      .subscribe((recipes) => {
+        this.recipeNamesSignal.set(recipes);
+      });
+  };
+
+  protected color = 'yellow';
+  protected selectedStyle: string | undefined;
+
+  selectStyle(style: string) {
+    this.selectedStyle = style;
+  }
 }

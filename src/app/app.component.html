@@ -1,8 +1,24 @@
-@if ({recipes: filteredRecipeData(), recipeNames: recipeNames$ | async}; as data) {
+@if ({recipes: filteredRecipeData(), recipeNames: recipeNamesSignal()}; as data) {
+
+<h1>Search Recipes</h1>
+
+<form (submit)="searchRecipe(recipeSearchParam)">
+  <label>Search Recipe</label>
+  <input type="text" name="recipe" [(ngModel)]="recipeSearchParam">
+  <button type="submit">Submit</button>
+</form>
+
+<ul>
+  @for (recipeName of data.recipeNames; track recipeName) {
+  <li>{{ recipeName }}</li>
+  }
+</ul>
+
 <p>Recipe Details:</p>
 @for (recipe of data.recipes; track recipe) {
 <ul>
   <li>{{ recipe.strMeal }}</li>
+  <!-- <li>{{ recipe.ingredients }} - {{ recipe.measurements}}</li> -->
   <ul>
     @for (ingredient of recipe.ingredients; track ingredient) {
     <li>{{ ingredient }}</li>
@@ -16,10 +32,6 @@
 </ul>
 }
 
-<p>Search Recipes</p>
-<ul>
-  @for (recipeName of data.recipeNames; track recipeName) {
-  <li>{{ recipeName }}</li>
-  }
-</ul>
+<p appHighlightMe [color]="color">Highlight me!</p>
+
 }
