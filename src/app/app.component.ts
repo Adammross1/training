@@ -6,7 +6,8 @@ import { Observable, Subject, map, of } from 'rxjs';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { FocusDetailsDirective } from './focus-details.directive';
 import { HighlightMeDirective } from './highlight-me.directive';
-import { FormsModule } from '@angular/forms';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormControl } from '@angular/forms';
 @Component({
   selector: 'app-root',
   standalone: true,
@@ -15,7 +16,7 @@ import { FormsModule } from '@angular/forms';
     CommonModule,
     HighlightMeDirective,
     FocusDetailsDirective,
-    FormsModule,
+    ReactiveFormsModule,
   ],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss',
@@ -23,6 +24,16 @@ import { FormsModule } from '@angular/forms';
 export class AppComponent {
   title = 'training';
   private recipesService = inject(RecipesService);
+  private formBuilder = inject(FormBuilder)
+
+  protected recipeSearchFormGroup = this.formBuilder.group({
+    recipeSearchControl: [''],
+    nameControl: ['']
+  })
+
+  get recipeSearch() {
+    return this.recipeSearchFormGroup.controls.recipeSearchControl;
+  }
   private recipesSignal = toSignal(
     this.recipesService.fetchDetails(['52772', '52773', '52774'])
   );
@@ -60,6 +71,7 @@ export class AppComponent {
   protected recipeNamesSignal = signal<string[]>([]);
   protected recipeSearchParam = '';
   protected searchRecipe = (searchParam: string) => {
+    console.log(searchParam);
     this.recipesService
       .fetchName(searchParam)
       .pipe(
