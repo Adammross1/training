@@ -3,14 +3,18 @@
 
 <h1>Search Recipes</h1>
 
-<form
-  [formGroup]="recipeSearchFormGroup"
-  (submit)="searchRecipe(recipeSearch.value ?? '')"
->
-  <label>Search Recipe</label>
-  <input type="text" name="recipe" formControlName="recipeSearchControl" />
-  <label>Name</label>
-  <input type="text" name="name" formControlName="nameControl" />
+<form [formGroup]="outerFormGroup" (submit)="searchRecipe()">
+  @for (formGroup of recipeSearchFormArray.controls; track formGroup; let index = $index) {
+  <div [formGroup]="formGroup">
+    <label for="search-{{index}}">Search Recipe</label>
+    <input type="text" name="recipe" formControlName="recipeSearchControl" />
+    <label>Name</label>
+    <input type="text" name="name" formControlName="nameControl" />
+    <button type="button" (click)="removeFormGroup(index)">X</button><br>
+  </div>
+  }
+  <br>
+  <button type="button" (click)="addFormGroup()">Add Row</button><br><br>
   <button type="submit">Submit</button>
 </form>
 

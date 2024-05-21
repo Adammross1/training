@@ -6,7 +6,13 @@ import { Observable, Subject, map, of } from 'rxjs';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { FocusDetailsDirective } from './focus-details.directive';
 import { HighlightMeDirective } from './highlight-me.directive';
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import {
+  FormArray,
+  FormBuilder,
+  FormGroup,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
 import { FormControl } from '@angular/forms';
 @Component({
   selector: 'app-root',
@@ -24,16 +30,33 @@ import { FormControl } from '@angular/forms';
 export class AppComponent {
   title = 'training';
   private recipesService = inject(RecipesService);
-  private formBuilder = inject(FormBuilder)
+  private formBuilder = inject(FormBuilder);
 
-  protected recipeSearchFormGroup = this.formBuilder.group({
-    recipeSearchControl: [''],
-    nameControl: ['']
-  })
-
-  get recipeSearch() {
-    return this.recipeSearchFormGroup.controls.recipeSearchControl;
+  protected outerFormGroup = this.formBuilder.group({
+    recipeSearchFormArray: new FormArray([
+      this.formBuilder.group({
+        recipeSearchControl: [''],
+        nameControl: [''],
+      })
+    ])
+  });
+  get recipeSearchFormArray() {
+    return this.outerFormGroup.controls.recipeSearchFormArray;
   }
+  protected addFormGroup = () => {
+    this.recipeSearchFormArray.push(
+      this.formBuilder.group({
+        recipeSearchControl: [''],
+        nameControl: [''],
+      })
+    );
+  };
+  protected removeFormGroup = (index: number) => {
+    if (this.recipeSearchFormArray.length > 0) {
+      this.recipeSearchFormArray.removeAt(index);
+    }
+  };
+
   private recipesSignal = toSignal(
     this.recipesService.fetchDetails(['52772', '52773', '52774'])
   );
@@ -69,10 +92,15 @@ export class AppComponent {
   };
 
   protected recipeNamesSignal = signal<string[]>([]);
-  protected recipeSearchParam = '';
-  protected searchRecipe = (searchParam: string) => {
-    console.log(searchParam);
-    this.recipesService
+  protected recipes: string[] = [];
+
+  protected searchRecipe = () => {
+    this.recipes = [];
+    this.recipeSearchFormArray.value.map((value) => {
+      return value.recipeSearchControl;
+    }).filter((searchParam): searchParam is string => !!searchParam)
+      .forEach((searchParam) => {
+      this.recipesService
       .fetchName(searchParam)
       .pipe(
         map((data) => {
@@ -83,9 +111,13 @@ export class AppComponent {
           return meals.map((meal: { strMeal: any }) => meal.strMeal);
         })
       )
-      .subscribe((recipes) => {
-        this.recipeNamesSignal.set(recipes);
+      .subscribe((response) => {
+        response.forEach((recipe: string) => {
+          this.recipes.push(recipe);
+        })
       });
+    })
+    this.recipeNamesSignal.set(this.recipes);
   };
 
   protected color = 'yellow';
