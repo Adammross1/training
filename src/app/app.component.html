@@ -1,21 +1,31 @@
+<nav>
+  <ul>
+    <li><a routerLink="/search-recipe" routerLinkActive="active" ariaCurrentWhenActive="page">Search Recipe</a></li>
+    <li><a routerLink="/create-recipe" routerLinkActive="active" ariaCurrentWhenActive="page">Create Recipe</a></li>
+  </ul>
+</nav>
+
+<router-outlet></router-outlet>
+
 @if ({recipes: filteredRecipeData(), recipeNames: recipeNamesSignal()}; as data)
 {
 
 <h1>Search Recipes</h1>
 
 <form [formGroup]="outerFormGroup" (submit)="searchRecipe()">
-  @for (formGroup of recipeSearchFormArray.controls; track formGroup; let index = $index) {
-  <div [formGroup]="formGroup">
+  @for (formControl of recipeSearchFormArray.controls; track formControl; let index = $index) {
+  <div formArrayName="recipeSearchFormArray">
     <label for="search-{{index}}">Search Recipe</label>
-    <input type="text" name="recipe" formControlName="recipeSearchControl" />
-    <label>Name</label>
-    <input type="text" name="name" formControlName="nameControl" />
+    <input type="text" name="recipe" [formControlName]="index" required />
     <button type="button" (click)="removeFormGroup(index)">X</button><br>
   </div>
   }
   <br>
   <button type="button" (click)="addFormGroup()">Add Row</button><br><br>
   <button type="submit">Submit</button>
+  @if (isSubmitted && !outerFormGroup.valid && (outerFormGroup.dirty || outerFormGroup.touched)) {
+  <p>Please remove all empty rows</p>
+  }
 </form>
 
 <ul>

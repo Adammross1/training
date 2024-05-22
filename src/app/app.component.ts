@@ -1,5 +1,5 @@
 import { Component, Signal, computed, inject, signal } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { RecipesService } from './core/services/recipes.service';
 import { CommonModule } from '@angular/common';
 import { Observable, Subject, map, of } from 'rxjs';
@@ -23,6 +23,8 @@ import { FormControl } from '@angular/forms';
     HighlightMeDirective,
     FocusDetailsDirective,
     ReactiveFormsModule,
+    RouterLink,
+    RouterLinkActive,
   ],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss',
@@ -31,24 +33,17 @@ export class AppComponent {
   title = 'training';
   private recipesService = inject(RecipesService);
   private formBuilder = inject(FormBuilder);
-
   protected outerFormGroup = this.formBuilder.group({
-    recipeSearchFormArray: new FormArray([
-      this.formBuilder.group({
-        recipeSearchControl: [''],
-        nameControl: [''],
-      })
-    ])
+    recipeSearchFormArray: this.formBuilder.array([
+      this.formBuilder.control('', Validators.required),
+    ]),
   });
   get recipeSearchFormArray() {
     return this.outerFormGroup.controls.recipeSearchFormArray;
   }
   protected addFormGroup = () => {
     this.recipeSearchFormArray.push(
-      this.formBuilder.group({
-        recipeSearchControl: [''],
-        nameControl: [''],
-      })
+      this.formBuilder.control('', Validators.required)
     );
   };
   protected removeFormGroup = (index: number) => {
@@ -93,31 +88,34 @@ export class AppComponent {
 
   protected recipeNamesSignal = signal<string[]>([]);
   protected recipes: string[] = [];
-
+  protected isSubmitted = false;
   protected searchRecipe = () => {
-    this.recipes = [];
-    this.recipeSearchFormArray.value.map((value) => {
-      return value.recipeSearchControl;
-    }).filter((searchParam): searchParam is string => !!searchParam)
-      .forEach((searchParam) => {
-      this.recipesService
-      .fetchName(searchParam)
-      .pipe(
-        map((data) => {
-          const meals = data.meals;
-          if (!meals) {
-            return ['sorry, no results'];
-          }
-          return meals.map((meal: { strMeal: any }) => meal.strMeal);
-        })
-      )
-      .subscribe((response) => {
-        response.forEach((recipe: string) => {
-          this.recipes.push(recipe);
-        })
-      });
-    })
-    this.recipeNamesSignal.set(this.recipes);
+    this.isSubmitted = true;
+    if (this.outerFormGroup.valid) {
+      this.recipes = [];
+      this.recipeSearchFormArray.value
+        .filter((searchParam): searchParam is string => !!searchParam)
+        .forEach((searchParam) => {
+          this.recipesService
+            .fetchName(searchParam)
+            .pipe(
+              map((data) => {
+                const meals = data.meals;
+                if (!meals) {
+                  return ['sorry, no results'];
+                }
+                return meals.map((meal: { strMeal: any }) => meal.strMeal);
+              })
+            )
+            .subscribe((response) => {
+              response.forEach((recipe: string) => {
+                this.recipes.push(recipe);
+              });
+            });
+        });
+      this.recipeNamesSignal.set(this.recipes);
+      this.isSubmitted = false;
+    }
   };
 
   protected color = 'yellow';
