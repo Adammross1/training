@@ -1,1 +1,48 @@
-<p>search-recipe works!</p>
+@if ({recipes: filteredRecipeData(), recipeNames: recipeNamesSignal()}; as data)
+{
+
+<h1>Search Recipes</h1>
+
+<form [formGroup]="outerFormGroup" (submit)="searchRecipe()">
+  @for (formControl of recipeSearchFormArray.controls; track formControl; let index = $index) {
+  <div formArrayName="recipeSearchFormArray">
+    <label for="search-{{index}}">Search Recipe</label>
+    <input type="text" name="recipe" [formControlName]="index" required />
+    <button type="button" (click)="removeFormGroup(index)">X</button><br>
+  </div>
+  }
+  <br>
+  <button type="button" (click)="addFormGroup()">Add Row</button><br><br>
+  <button type="submit">Submit</button>
+  @if (isSubmitted && !outerFormGroup.valid && (outerFormGroup.dirty || outerFormGroup.touched)) {
+  <p>Please remove all empty rows</p>
+  }
+</form>
+
+<ul>
+  @for (recipeName of data.recipeNames; track recipeName) {
+  <li>{{ recipeName }}</li>
+  }
+</ul>
+
+<p>Recipe Details:</p>
+@for (recipe of data.recipes; track recipe) {
+<ul>
+  <li>{{ recipe.strMeal }}</li>
+  <!-- <li>{{ recipe.ingredients }} - {{ recipe.measurements}}</li> -->
+  <ul>
+    @for (ingredient of recipe.ingredients; track ingredient) {
+    <li>{{ ingredient }}</li>
+    }
+  </ul>
+  <ul>
+    @for (measure of recipe.measurements; track measure) {
+    <li>{{ measure }}</li>
+    }
+  </ul>
+</ul>
+}
+
+<p appHighlightMe [color]="color">Highlight me!</p>
+
+}
