@@ -21,27 +21,14 @@
 
 <ul>
   @for (recipeName of data.recipeNames; track recipeName) {
-  <li>{{ recipeName }}</li>
+  <li>
+    <a [routerLink]="['show/', recipeName.id]" routerLinkActive="activebutton" ariaCurrentWhenActive="page">
+      {{ recipeName.strMeal }}</a>
+  </li>
   }
 </ul>
 
-<p>Recipe Details:</p>
-@for (recipe of data.recipes; track recipe) {
-<ul>
-  <li>{{ recipe.strMeal }}</li>
-  <!-- <li>{{ recipe.ingredients }} - {{ recipe.measurements}}</li> -->
-  <ul>
-    @for (ingredient of recipe.ingredients; track ingredient) {
-    <li>{{ ingredient }}</li>
-    }
-  </ul>
-  <ul>
-    @for (measure of recipe.measurements; track measure) {
-    <li>{{ measure }}</li>
-    }
-  </ul>
-</ul>
-}
+<router-outlet />
 
 <p appHighlightMe [color]="color">Highlight me!</p>
 

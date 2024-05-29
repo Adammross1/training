@@ -14,6 +14,8 @@ import {
   Validators,
 } from '@angular/forms';
 import { FormControl } from '@angular/forms';
+import { ActivatedRoute } from '@angular/router';
+import { switchMap } from 'rxjs/operators';
 
 @Component({
   selector: 'app-search-recipe',
@@ -28,7 +30,7 @@ import { FormControl } from '@angular/forms';
     RouterLinkActive,
   ],
   templateUrl: './search-recipe.component.html',
-  styleUrl: './search-recipe.component.scss'
+  styleUrl: './search-recipe.component.scss',
 })
 export class SearchRecipeComponent {
   private recipesService = inject(RecipesService);
@@ -52,18 +54,20 @@ export class SearchRecipeComponent {
     }
   };
 
-  private recipesSignal = toSignal(
-    this.recipesService.fetchDetails(['52772', '52773', '52774'])
-  );
-  protected filteredRecipeData = computed(() =>
-    this.recipesSignal()
-      ?.map((value) => value.meals[0])
-      .map((recipe) => ({
+  private recipesSignal = toSignal(this.recipesService.fetchDetails(52772));
+  protected filteredRecipeData = computed(() => {
+    const value = this.recipesSignal();
+    if (value && value.meals && value.meals.length > 0) {
+      const recipe = value.meals[0];
+      return {
         strMeal: recipe.strMeal,
+        id: recipe.id,
         ingredients: this.getIngredients(recipe),
         measurements: this.getMeasurements(recipe),
-      }))
-  );
+      };
+    }
+    return null;
+  });
 
   getIngredients = (recipe: any): string[] => {
     const ingredients: string[] = [];
@@ -86,8 +90,8 @@ export class SearchRecipeComponent {
     return measurements;
   };
 
-  protected recipeNamesSignal = signal<string[]>([]);
-  protected recipes: string[] = [];
+  protected recipeNamesSignal = signal<{ strMeal: any; id: any }[]>([]);
+  protected recipes: { strMeal: any; id: any }[] = [];
   protected isSubmitted = false;
   protected searchRecipe = () => {
     this.isSubmitted = true;
@@ -102,13 +106,16 @@ export class SearchRecipeComponent {
               map((data) => {
                 const meals = data.meals;
                 if (!meals) {
-                  return ['sorry, no results'];
+                  return [{ strMeal: 'sorry, no results', id: null }];
                 }
-                return meals.map((meal: { strMeal: any }) => meal.strMeal);
+                return meals.map((meal: { strMeal: any; idMeal: any }) => ({
+                  strMeal: meal.strMeal,
+                  id: meal.idMeal,
+                }));
               })
             )
-            .subscribe((response) => {
-              response.forEach((recipe: string) => {
+            .subscribe((response: { strMeal: any; id: any }[]) => {
+              response.forEach((recipe) => {
                 this.recipes.push(recipe);
               });
             });
