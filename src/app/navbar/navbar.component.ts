@@ -20,7 +20,7 @@ export class NavbarComponent {
   }
 
   protected logout = () => {
-    console.log('true');
+    console.log('false');
     this.authService.logout()
   }
 }
