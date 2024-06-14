@@ -1,6 +1,7 @@
 import { Component, inject } from '@angular/core';
 import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { AuthService } from '../core/services/auth.service';
+import { KeycloakService } from 'keycloak-angular';
 
 @Component({
   selector: 'app-navbar',
@@ -12,15 +13,14 @@ import { AuthService } from '../core/services/auth.service';
   styleUrl: './navbar.component.scss'
 })
 export class NavbarComponent {
-  protected authService = inject(AuthService);
+  protected keycloakService = inject(KeycloakService);
 
-  protected login = () => {
-    console.log('true');
-    this.authService.login()
+  protected async login() {
+    console.log(this.keycloakService)
+    await this.keycloakService.login()
   }
 
-  protected logout = () => {
-    console.log('false');
-    this.authService.logout()
+  protected async logout() {
+    await this.keycloakService.logout()
   }
 }
