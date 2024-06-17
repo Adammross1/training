@@ -1,9 +1,14 @@
 @if (authenticated) {
-    <h1>Welcome, {{user}}</h1>
+<h1>Welcome, {{user}}</h1>
 }
 @else {
-    <h1>Welcome</h1>
+<h1>Welcome</h1>
 }
+
+<app-custom-card>
+    <h3 class="card-title">Cool website</h3>
+    <p class="card-body">where you can search cool recipes</p>
+</app-custom-card>
 
 
 <a [routerLink]="'recipe'">navigate!</a>

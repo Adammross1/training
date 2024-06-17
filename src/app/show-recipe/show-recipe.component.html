@@ -1,19 +1,4 @@
-<!-- <p>Recipe Details:</p>
-@for (recipe of data.recipes; track recipe) {
-<ul>
-  <li>{{ recipe.strMeal }}</li>
-  <ul>
-    @for (ingredient of recipe.ingredients; track ingredient) {
-    <li>{{ ingredient }}</li>
-    }
-  </ul>
-  <ul>
-    @for (measure of recipe.measurements; track measure) {
-    <li>{{ measure }}</li>
-    }
-  </ul>
-</ul>
-} -->
+
 @if ({recipe: recipe$ | async}; as data) {
 <p>{{ data.recipe?.strMeal }}</p>
 <ul>

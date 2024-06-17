@@ -9,21 +9,23 @@ import {
 import { NavbarComponent } from './navbar/navbar.component';
 import { KeycloakAngularModule, KeycloakService } from 'keycloak-angular';
 import { from } from 'rxjs';
+import { CustomCardComponent } from "./custom-card/custom-card.component";
 @Component({
-  selector: 'app-root',
-  standalone: true,
-  imports: [
-    RouterOutlet,
-    CommonModule,
-    HighlightMeDirective,
-    FocusDetailsDirective,
-    ReactiveFormsModule,
-    NavbarComponent,
-    RouterLink,
-    RouterLinkActive,
-  ],
-  templateUrl: './app.component.html',
-  styleUrl: './app.component.scss',
+    selector: 'app-root',
+    standalone: true,
+    templateUrl: './app.component.html',
+    styleUrl: './app.component.scss',
+    imports: [
+        RouterOutlet,
+        CommonModule,
+        HighlightMeDirective,
+        FocusDetailsDirective,
+        ReactiveFormsModule,
+        NavbarComponent,
+        RouterLink,
+        RouterLinkActive,
+        CustomCardComponent
+    ]
 })
 export class AppComponent {
   title = 'training';

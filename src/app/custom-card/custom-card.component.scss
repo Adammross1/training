@@ -1,0 +1,15 @@
+div {
+  border: 1px solid #ccc;
+  border-radius: 1px;
+  padding: 2rem;
+  text-align: center;
+  .card-title {
+    color: #444;
+    font-size: 2rem;
+  }
+
+  .card-body {
+    color: #777;
+    font-size: 1rem;
+  }
+}
