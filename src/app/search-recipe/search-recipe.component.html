@@ -1,7 +1,10 @@
 @if ({recipes: filteredRecipeData(), recipeNames: recipeNamesSignal()}; as data)
 {
 
-<h1>Search Recipes</h1>
+<app-custom-card>
+  <h3 class="card-title">Search Recipes</h3>
+  <p class="card-body">Make sure to log in before clicking a recipe</p>
+</app-custom-card>
 
 <form [formGroup]="outerFormGroup" (submit)="searchRecipe()">
   @for (formControl of recipeSearchFormArray.controls; track formControl; let index = $index) {
