@@ -4,6 +4,7 @@ import { map, switchMap } from 'rxjs';
 import { RecipesService } from '../core/services/recipes.service';
 import { CommonModule } from '@angular/common';
 import { toSignal } from '@angular/core/rxjs-interop';
+import { SelectDirective } from '../select.directive';
 
 @Component({
   selector: 'app-create-recipe',
@@ -16,6 +17,7 @@ export class ShowRecipeComponent {
   private recipesService = inject(RecipesService);
   protected selectedId: number = 0;
   protected route = inject(ActivatedRoute);
+  protected selectDirective = inject(SelectDirective);
 
   protected recipe$ = this.route.paramMap.pipe(
     switchMap((params) => {
