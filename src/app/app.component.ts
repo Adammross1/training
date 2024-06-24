@@ -37,9 +37,6 @@ export class AppComponent {
   this.authenticated = this.keycloakService.isLoggedIn();
     if (this.authenticated) {
       this.user = this.keycloakService.getUsername();
-      this.keycloakService.getToken().then((token) => {
-        console.log(token)
-      })
     }
   }
 }

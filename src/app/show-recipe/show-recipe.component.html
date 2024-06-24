@@ -1,11 +1,14 @@
-
-@if ({recipe: recipe$ | async}; as data) {
-<p>{{ data.recipe?.strMeal }}</p>
+@if ((recipe$ | async); as recipe) {
+<p>{{ recipe!.strMeal }}</p>
 <ul>
-  @for (ingredient of data.recipe?.ingredients; track ingredient) {
+  @for (ingredient of recipe!.ingredients; track ingredient) {
   <li>{{ ingredient }}</li>
   }
 </ul>
 }
-
-<p *select="let data from source">The data is: {{data}}</p>
+@else {
+<ng-container *ngTemplateOutlet="message"></ng-container>
+}
+<ng-template #message>
+  <p>No data here</p>
+</ng-template>

@@ -16,23 +16,25 @@ import {
 import { FormControl } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { switchMap } from 'rxjs/operators';
-import { CustomCardComponent } from "../custom-card/custom-card.component";
+import { CustomCardComponent } from '../custom-card/custom-card.component';
+import { ArticleComponent } from '../article/article.component';
 
 @Component({
-    selector: 'app-search-recipe',
-    standalone: true,
-    templateUrl: './search-recipe.component.html',
-    styleUrl: './search-recipe.component.scss',
-    imports: [
-        RouterOutlet,
-        CommonModule,
-        HighlightMeDirective,
-        FocusDetailsDirective,
-        ReactiveFormsModule,
-        RouterLink,
-        RouterLinkActive,
-        CustomCardComponent
-    ]
+  selector: 'app-search-recipe',
+  standalone: true,
+  templateUrl: './search-recipe.component.html',
+  styleUrl: './search-recipe.component.scss',
+  imports: [
+    RouterOutlet,
+    CommonModule,
+    HighlightMeDirective,
+    FocusDetailsDirective,
+    ReactiveFormsModule,
+    RouterLink,
+    RouterLinkActive,
+    CustomCardComponent,
+    ArticleComponent,
+  ],
 })
 export class SearchRecipeComponent {
   private recipesService = inject(RecipesService);

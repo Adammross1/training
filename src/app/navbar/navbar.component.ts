@@ -16,7 +16,6 @@ export class NavbarComponent {
   protected keycloakService = inject(KeycloakService);
 
   protected async login() {
-    console.log(this.keycloakService)
     await this.keycloakService.login()
   }
 

@@ -36,3 +36,13 @@
 <p appHighlightMe [color]="color">Highlight me!</p>
 
 }
+
+@defer (on viewport) {
+  <app-article />
+}
+@placeholder {
+<p>future recipes</p>
+}
+@loading (minimum 2s) {
+<p>loading...</p>
+}
